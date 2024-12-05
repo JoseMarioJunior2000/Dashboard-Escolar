@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2 class="mt-4">Buscar Encontros</h2>
+    
+    <!-- Formulário de busca -->
+    <form action="{{ url_for('buscar_encontros') }}" method="GET" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <label for="trilha" class="form-label">Trilha</label>
+            <select name="trilha" id="trilha" class="form-select">
+                <option value="">Selecione a trilha</option>
+                {% for trilha in trilhas %}
+                    <option value="{{ trilha }}">{{ trilha }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label for="data_inicial" class="form-label">Data Inicial</label>
+            <input type="date" name="data_inicial" id="data_inicial" class="form-control">
+        </div>
+
+        <div class="col-md-4">
+            <label for="data_final" class="form-label">Data Final</label>
+            <input type="date" name="data_final" id="data_final" class="form-control">
+        </div>
+
+        <div class="col-md-4">
+            <label for="hora" class="form-label">Hora</label>
+            <input type="time" name="hora" id="hora" class="form-control">
+        </div>
+
+        <div class="col-md-4">
+            <label for="modulo" class="form-label">Módulo</label>
+            <input type="text" name="modulo" id="modulo" class="form-control">
+        </div>
+
+        <div class="col-md-4">
+            <label for="assunto" class="form-label">Assunto</label>
+            <input type="text" name="assunto" id="assunto" class="form-control">
+        </div>
+
+        <div class="col-md-4">
+            <label for="professor" class="form-label">Professor</label>
+            <input type="text" name="professor" id="professor" class="form-control">
+        </div>
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </div>
+    </form>
+
+    <!-- Resultados da busca -->
+    <div class="row">
+        {% if encontros %}
+            {% for encontro in encontros %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ encontro.trilha }} - {{ encontro.modulo }}</h5>
+                            <p class="card-text"><strong>Data:</strong> {{ encontro.data }}</p>
+                            <p class="card-text"><strong>Hora:</strong> {{ encontro.hora }}</p>
+                            <p class="card-text"><strong>Assunto:</strong> {{ encontro.assunto }}</p>
+                            <p class="card-text"><strong>Duração:</strong> {{ encontro.duracao }} minutos</p>
+                            <a href="{{ url_for('detalhes_encontro', encontro_id=encontro.id) }}" class="btn btn-primary">Ver Mais</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Nenhum encontro encontrado com os critérios de busca.</p>
+        {% endif %}
+    </div>
+{% endblock %}

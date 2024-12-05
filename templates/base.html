@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha EdTech</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMDhWSTx8gZEv4RmyZ8VbA3oH8coZ4Y4oB7F2Zl" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <div class="sidebar-heading text-white" id="sidebar-heading">Alpha EdTech</div>
+            <div class="list-group list-group-flush">
+                <a href="{{ url_for('home.home') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-th"></i>
+                    <span class="item-description">Painel</span>
+                </a>
+
+                <a href="{{ url_for('eventos.calendario') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-calendar-check"></i>
+                    <span class="item-description">Eventos</span>
+                </a>
+
+                <a href="{{ url_for('professores.dashboard') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span class="item-description">Professores</span>
+                </a>
+
+                <!-- Turmas com submenu -->
+                <div class="list-group-item list-group-item-action dropdown-toggle" data-bs-toggle="collapse" data-bs-target="#turmas-submenu" aria-expanded="false">
+                    <i class="fa-brands fa-wpforms"></i>
+                    <span class="item-description">Turmas</span>
+                </div>
+                <div class="collapse" id="turmas-submenu">
+                    <a href="/turmas" class="list-group-item list-group-item-action">
+                        <i class="fas fa-info-circle"></i> Turmas Detalhes
+                    </a>
+                    <a href="/turmas/adicionar" class="list-group-item list-group-item-action">
+                        <i class="fas fa-plus-circle"></i> Adicionar Turma
+                    </a>
+                </div>
+                
+                <!-- Alunos com submenu -->
+                <div class="list-group-item list-group-item-action dropdown-toggle" data-bs-toggle="collapse" data-bs-target="#alunos-submenu" aria-expanded="false">
+                    <i class="fas fa-user-graduate"></i>
+                    <span class="item-description">Aspirantes</span>
+                </div>
+                <div class="collapse" id="alunos-submenu">
+                    <a href="/aspirante/lista" class="list-group-item list-group-item-action">
+                        <i class="fas fa-list"></i> Lista de Aspirantes
+                    </a>
+                    <a href="/aspirante/adicionar" class="list-group-item list-group-item-action">
+                        <i class="fas fa-plus-circle"></i> Adicionar Aspirante
+                    </a>
+                </div>
+
+                <!-- Encontros com submenu -->
+                <div class="list-group-item list-group-item-action dropdown-toggle" data-bs-toggle="collapse" data-bs-target="#encontros-submenu" aria-expanded="false">
+                    <i class="fas fa-clipboard"></i>
+                    <span class="item-description">Aulas</span>
+                </div>
+                <div class="collapse" id="encontros-submenu">
+                    <a href="{{ url_for('trilhas.listar_encontros') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-list"></i> Lista de Encontros
+                    </a>
+                    <a href="{{ url_for('trilhas.adicionar_encontro') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-plus-circle"></i> Adicionar Aula
+                    </a>
+                </div>
+
+                <a href="{{ url_for('atividades.atividades') }}" class="list-group-item list-group-item-action">
+                    <i class="fa-solid fa-book"></i>
+                    <span class="item-description">Atividades</span>
+                </a>
+            </div>
+            <button class="btn btn-secondary" id="expand-toggle">
+                <i class="fas fa-angle-right"></i>
+            </button>
+        </div>
+        
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <!-- Painel Header -->
+                <div class="painel-header">
+                    <!-- Flash Messages - Mostra mensagens de erro ou sucesso -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="container mt-3">
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}" role="alert">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% endwith %}
+                    {% block header %}
+                    {% endblock %}
+                </div>
+        
+                <!-- Seção de Injects (Cartões) -->
+                {% if request.endpoint == 'home.home' %}
+                <div class="row text-center my-4">
+                    <div class="col-md-4">
+                        <div class="info-box">
+                            <div class="color-bar"></div>
+                            <i class="fas fa-user-graduate fa-3x icon-left"></i>
+                            <div class="content">
+                                <h4>Total de Alunos</h4>
+                                <div class="separator-bar"></div>
+                                <p>{{ total_aspirantes }}</p>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="col-12 col-md-4">
+                        <div class="info-box">
+                            <div class="color-bar"></div>
+                            <i class="fas fa-chalkboard-teacher fa-3x icon-left"></i>
+                            <div class="content">
+                                <h4>Total de Professores</h4>
+                                <div class="separator-bar"></div>
+                                <p>{{ total_professores }}</p>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="col-md-4">
+                        <div class="info-box">
+                            <div class="color-bar"></div>
+                            <i class="fas fa-school fa-3x icon-left"></i>
+                            <div class="content">
+                                <h4>Total de Turmas</h4>
+                                <div class="separator-bar"></div>
+                                <p>{{ total_turmas }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+        
+                <!-- Conteúdo Específico da Página -->
+                <div class="content">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>        
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $("#expand-toggle").click(function (e) {
+            e.preventDefault();
+            $("#sidebar-wrapper").toggleClass("expanded");
+            $(this).find("i").toggleClass("fa-angle-right fa-angle-left");
+        });
+    </script>
+</body>
+</html>

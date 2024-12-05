@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="painel-header">
+    <h1> 
+        <i class="fa-brands fa-wpforms"></i> Turmas
+    </h1>
+    <p class="welcome-message">Visualize todos os aspirantes da {{ turma.nome }}</p>
+    <div class="aspirantes-container">
+        {% for aspirante in aspirantes %}
+        <div class="aspirante-card">
+            <div class="aspirante-nome">
+                <h3>{{ aspirante.nome }}</h3>
+            </div>
+            
+            <div class="aspirante-foto-container">
+                <i class="fas fa-user-circle aspirante-foto"></i>
+            </div>
+
+            <!-- Botão com link para a página de detalhes -->
+            <a href="{{ url_for('lista.visualizar_aspirante', id=aspirante.id) }}" class="btn" 
+            style="background-color: rgb(0, 155, 182); color: white;">
+            <i class="fas fa-user-graduate"></i> Visualizar Aspirante
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

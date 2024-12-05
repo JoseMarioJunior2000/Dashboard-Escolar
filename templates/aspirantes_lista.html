@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Todos Aspirantes - Alpha EdTech{% endblock %}
+
+{% block content %}
+<div class="painel-header">
+    <h1> 
+        <i class="fas fa-user-graduate"></i> Aspirantes
+    </h1>
+    <p class="welcome-message">Visualize os aspirantes do Alpha EdTech</p>
+    <div class="container mt-4">
+        <div style="max-height: 550px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Idade</th>
+                        <th>Sexo</th>
+                        <th>UF</th>
+                        <th>Fone</th>
+                        <th>Ativo</th>
+                        <th>Ações</th> <!-- Nova coluna -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for aspirante in aspirantes %}
+                    <tr>
+                        <td>{{ aspirante.id }}</td>
+                        <td>{{ aspirante.nome }}</td>
+                        <td>{{ aspirante.email }}</td>
+                        <td>{{ aspirante.idade }}</td>
+                        <td>{{ aspirante.sexo }}</td>
+                        <td>{{ aspirante.uf }}</td>
+                        <td>{{ aspirante.fone }}</td>
+                        <td>{{ 'Sim' if aspirante.ativo else 'Não' }}</td>
+                        <td>
+                            <!-- Botão de Visualizar -->
+                            <a href="{{ url_for('lista.visualizar_aspirante', id=aspirante.id) }}" class="btn btn-primary btn-sm">
+                                Visualizar
+                            </a>
+
+                            <!-- Botão de Deletar -->
+                            <form action="{{ url_for('lista.deletar_aspirante', id=aspirante.id) }}" method="post" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar este aspirante?');">
+                                    Deletar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

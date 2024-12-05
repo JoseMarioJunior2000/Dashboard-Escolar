@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block style %}
+
+{% endblock %}
+
+{% block header %}
+<div class="painel-header">
+    <h1>
+        <i class="fas fa-th"></i> Painel
+    </h1>
+</div>
+<p class="welcome-message">Bem-vindo(a) ao Alpha EdTech!</p>
+<div class="agenda-container">
+    <h3>Eventos</h3>
+    <ul class="agenda-list">
+      {% for evento in eventos %}
+      <li class="agenda-item">
+        <div class="evento-info">
+          <h4>{{ evento.nome }}</h4>
+          <p>Data: {{ evento.data }}</p>
+          <p>Hora: {{ evento.hora }}</p>
+        </div>
+      </li>
+      {% else %}
+      <p>Não há eventos marcados para os próximos 7 dias.</p>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}
+
+{% block content %}
+
+    <!-- Primeiro gráfico -->
+    <div id="grafico-sexo"></div>
+
+    <!-- Segundo gráfico -->
+    <div id="grafico-idade"></div>
+
+    <!-- Gráfico turma -->
+    <div id="grafico-turma"></div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    // Obter o JSON dos gráficos do Flask
+    const graficoSexoJSON = JSON.parse('{{ grafico_sexo|safe }}');
+    const graficoIdadeJSON = JSON.parse('{{ grafico_idade|safe }}');
+    const graficoTurmaJSON = JSON.parse('{{ grafico_turma|safe }}');
+
+    // Renderizar os gráficos
+    Plotly.newPlot('grafico-sexo', graficoSexoJSON.data, graficoSexoJSON.layout, { responsive: true });
+    Plotly.newPlot('grafico-idade', graficoIdadeJSON.data, graficoIdadeJSON.layout, { responsive: true });
+    Plotly.newPlot('grafico-turma', graficoTurmaJSON.data, graficoTurmaJSON.layout, { responsive: true });
+</script>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Adicionar Encontro</h1>
+    <form method="POST" enctype="multipart/form-data">  <!-- Adicionando enctype -->
+        <fieldset class="border p-3">
+            <legend class="w-auto">Informações do Encontro</legend>
+
+            <!-- Container para mensagens de sucesso ou erro -->
+            <div id="message-container" class="mt-3">
+                {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endif %}
+                {% if success_message %}
+                <div class="alert alert-success" role="alert">
+                    {{ success_message }}
+                </div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label for="trilha" class="form-label">Trilha</label>
+                <select class="form-select" id="trilha" name="trilha" required>
+                    <option value="Hard">Hard</option>
+                    <option value="Soft">Soft</option>
+                    <option value="Inglês">Inglês</option>
+                    <option value="ME">Momento Empresa</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="atividade" class="form-label">Atividade</label>
+                <select class="form-select" id="atividade" name="atividade">
+                    <option value="true">Sim</option>
+                    <option value="false">Não</option>
+                </select>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label for="data" class="form-label">Data</label>
+                    <input type="date" class="form-control" id="data" name="data" required>
+                </div>
+                <div class="col">
+                    <label for="hora" class="form-label">Hora</label>
+                    <input type="time" class="form-control" id="hora" name="hora" required>
+                </div>
+                <div class="col">
+                    <label for="duracao" class="form-label">Duração (minutos)</label>
+                    <input type="number" class="form-control" id="duracao" name="duracao" required>
+                </div>
+                <div class="col">
+                    <label for="modulo" class="form-label">Módulo</label>
+                    <input type="text" maxlength="100" class="form-control" id="modulo" name="modulo" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="assunto" class="form-label">Assunto (opcional)</label>
+                <input type="text" maxlength="100" class="form-control" id="assunto" name="assunto"  placeholder="Digite o assunto, se necessário">
+            </div>
+
+            <div class="mb-3">
+                <label for="id_professor" class="form-label">Professor</label>
+                <select class="form-select" id="id_professor" name="id_professor" required>
+                    <option value="" disabled selected>Selecione um professor</option>
+                    {% for professor in professores %}
+                    <option value="{{ professor.id }}">{{ professor.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="aspirantes" class="form-label">Aspirantes Presentes</label>
+                <div class="scrollable-container">
+                    {% for aspirante in aspirantes %}
+                        <div class="form-check aspirante-row">
+                            <input class="form-check-input" type="checkbox" value="{{ aspirante.id }}" id="aspirante{{ aspirante.id }}" name="aspirantes[]">
+                            <label class="form-check-label aspirante-name" for="aspirante{{ aspirante.id }}">
+                                {{ aspirante.nome }}
+                            </label>
+                            <input type="number" class="form-control aspirante-minutos" id="minutos_{{ aspirante.id }}" name="minutos_{{ aspirante.id }}" placeholder="Minutos">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <button type="submit" class="btn" style="background-color: rgb(0, 182, 130); color: white;">
+                <i class="fas fa-save"></i> Adicionar Encontro
+            </button>
+            
+            <!-- Novo input de upload de arquivo -->
+            <div class="mt-3">
+                <label for="file_input" class="form-label">Carregar Arquivo XLSM ou XLSX</label>
+                <input type="file" class="form-control" id="file_input" name="file" accept=".xlsm,.xlsx">
+            </div>
+            
+            <!-- Botão para carregar o arquivo XLSM -->
+            <button type="button" class="btn mt-2" style="background-color: rgb(0, 182, 130); color: white;" onclick="uploadFile()">
+                <i class="fas fa-upload"></i> Carregar Arquivo
+            </button>
+            
+        </fieldset>
+    </form>
+</div>
+
+<script>
+    function uploadFile() {
+        const fileInput = document.getElementById('file_input');
+        const file = fileInput.files[0];
+
+        // Verificar se o arquivo foi selecionado e se é do tipo XLSX ou XLSM
+        if (file) {
+            const allowedExtensions = ['.xlsm', '.xlsx'];
+            const fileExtension = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+
+            if (allowedExtensions.includes(fileExtension)) {  // Verifica se a extensão é permitida
+                const formData = new FormData();
+                formData.append('file', file);
+
+                fetch('/upload_encontro', {  // URL configurada para o upload
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const messageContainer = document.getElementById('message-container');
+                    
+                    if (data.success) {
+                        let successMessage = `<div class="alert alert-success" role="alert">${data.message}</div>`;
+                        
+                        // Verificar se há erros e exibir uma lista
+                        if (data.errors && data.errors.length > 0) {
+                            const errorList = data.errors.map(error => `<li>${error}</li>`).join('');
+                            successMessage += `<div class="alert alert-warning" role="alert">
+                                <strong>Aviso:</strong> Alguns erros ocorreram:<ul>${errorList}</ul>
+                            </div>`;
+                        }
+                        
+                        messageContainer.innerHTML = successMessage;
+                    } else {
+                        messageContainer.innerHTML = `<div class="alert alert-danger" role="alert">${data.message}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao carregar o arquivo. Tente novamente.');
+                });
+            } else {
+                alert('Por favor, selecione um arquivo XLSX ou XLSM válido.');
+            }
+        } else {
+            alert('Por favor, selecione um arquivo XLSX ou XLSM.');
+        }
+    }
+</script>
+{% endblock %}

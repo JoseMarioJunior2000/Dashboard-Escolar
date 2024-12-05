@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+<body>
+    <div class="painel-header container-fluid">
+        <!-- Título e descrição -->
+        <div class="painel-header">
+            <h1> 
+                <i class="fas fa-chalkboard-teacher"></i> Professores
+            </h1>
+            <p class="welcome-message">Sobre os professores do Alpha EdTech</p>
+        <div>
+
+        <!-- Informações totais -->
+        <div class="row g-4 my-3">
+            <div class="col-lg-6 col-md-6">
+                <div class="info-box">
+                    <div class="color-bar"></div>
+                    <i class="fa-solid fa-circle-check fa-3x icon-left"></i>
+                    <div class="content">
+                        <h4>Total de Aulas</h4>
+                        <div class="separator-bar"></div>
+                        <p>{{ total_aulas }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="info-box">
+                    <div class="color-bar"></div>
+                    <i class="fas fa-chalkboard-teacher fa-3x icon-left"></i>
+                    <div class="content">
+                        <h4>Total de Professores</h4>
+                        <div class="separator-bar"></div>
+                        <p>{{ total_professores }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <form id="filtro-form" method="get" action="/professores" class="row g-3 text-center my-4">
+            <div class="col-lg-4 col-md-4">
+                <label for="ano" class="form-label">Ano</label>
+                <input type="number" class="form-control" id="ano" name="ano" placeholder="2024">
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <label for="mes" class="form-label">Mês</label>
+                <select id="mes" name="mes" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="1">Janeiro</option>
+                    <option value="2">Fevereiro</option>
+                    <option value="3">Março</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Maio</option>
+                    <option value="6">Junho</option>
+                    <option value="7">Julho</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Setembro</option>
+                    <option value="10">Outubro</option>
+                    <option value="11">Novembro</option>
+                    <option value="12">Dezembro</option>
+                </select>
+            </div>
+            <div class="col-lg-4 col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+            </div>
+        </form>
+
+        <!-- Gráficos -->
+        <div class="row g-4 my-4">
+            <div class="col-lg-6">
+                <div id="graficoAulas"></div>
+            </div>
+            <div class="col-lg-6">
+                <div id="graficoMinutos"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts para gráficos -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        // Inicializa o gráfico com os dados passados do backend
+        // Gráfico de Aulas por Professor
+        const graficoAulasJson = JSON.parse('{{ grafico_aulas_json|safe }}');
+        graficoAulasJson.layout.responsive = true;
+        Plotly.newPlot('graficoAulas', graficoAulasJson.data, graficoAulasJson.layout);
+
+        // Gráfico de Minutos por Professor
+        const graficoMinutosJson = JSON.parse('{{ grafico_minutos_json|safe }}');
+        graficoMinutosJson.layout.responsive = true;
+        Plotly.newPlot('graficoMinutos', graficoMinutosJson.data, graficoMinutosJson.layout);
+
+        // Evento de filtro
+        filtroForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Previne o envio do formulário
+
+                // Obter os valores dos filtros
+                const ano = document.getElementById('ano').value;
+                const mes = document.getElementById('mes').value;
+
+                // Fazer uma chamada AJAX para aplicar os filtros e obter o gráfico atualizado
+                fetch(`/professores?ano=${ano}&mes=${mes}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Atualiza o gráfico com os novos dados
+                    Plotly.react('grafico-figure', data.data, data.layout, { responsive: true });
+                })
+                .catch(error => {
+                    console.error('Erro ao atualizar o gráfico:', error);
+                });
+            });
+    </script>
+</body>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="painel-header">
+    <h1> 
+        <i class="fa-brands fa-wpforms"></i> Turmas
+    </h1>
+    <p class="welcome-message">Visualize todas as turmas do Alpha EdTech</p>
+    <div class="turmas-container">
+        {% for turma in turmas %}
+        <div class="turma-card">
+            <h2>{{ turma.nome }}</h2>
+            <a href="{{ url_for('turmas.listar_aspirantes_turma', slug=turma.slug) }}" class="ver-aspirantes-link">
+                Ver Aspirantes
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

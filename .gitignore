@@ -1,0 +1,9 @@
+# Ignorar a pasta .venv
+.venv/
+
+# Ignorar diretórios de cache
+__pycache__/
+
+# Ignore arquivos de banco de dados SQLite
+db
+*db.db

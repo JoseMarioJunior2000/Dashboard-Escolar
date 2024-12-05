@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Stay organized with our user-friendly Calendar featuring events, reminders, and a customizable interface. Built with HTML, CSS, and JavaScript. Start scheduling today!"
+    />
+    <meta
+      name="keywords"
+      content="calendar, events, reminders, javascript, html, css, open source coding"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+      integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>Calendar with Events</title>
+  </head>
+  <div class="painel-header">
+    <h1> 
+        <i class="fas fa-calendar-check"></i> Eventos
+    </h1>
+    <p class="welcome-message">Organize os seus eventos</p>
+    <body class="eventos">
+        <div class="container">
+        <div class="left">
+            <div class="calendar">
+            <div class="month">
+                <i class="fas fa-angle-left prev"></i>
+                <div class="date">December 2015</div>
+                <i class="fas fa-angle-right next"></i>
+            </div>
+            <div class="weekdays">
+                <div>Dom</div>
+                <div>Seg</div>
+                <div>Ter</div>
+                <div>Qua</div>
+                <div>Qui</div>
+                <div>Sex</div>
+                <div>Sáb</div>
+            </div>
+            <div class="days"></div>
+            <div class="goto-today">
+                <div class="goto">
+                <input type="text" placeholder="mm/yyyy" class="date-input" />
+                <button class="goto-btn">Pesquisar</button>
+                </div>
+                <button class="today-btn">Hoje</button>
+            </div>
+            </div>
+        </div>
+        <div class="right">
+            <div class="today-date">
+            <div class="event-day">Wed</div>
+            <div class="event-date">12th December 2022</div>
+            </div>
+            <div class="events"></div>
+            <div class="add-event-wrapper">
+            <div class="add-event-header">
+                <div class="title">Adicionar Evento</div>
+                <i class="fas fa-times close"></i>
+            </div>
+            <div class="add-event-body">
+                <div class="add-event-input">
+                    <select id="aspirantes" name="aspirantes" class="aspirante-select" multiple ondblclick="adicionarAspirante()">
+                        {% for aspirante in aspirantes %}
+                            <option value="{{ aspirante.id }}">{{ aspirante.nome }}</option> 
+                        {% else %}
+                            <option disabled>Nenhum aspirante encontrado</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            
+                <!-- Área onde os aspirantes selecionados aparecerão -->
+                <div class="add-event-input aspirantes-selecionados">
+                    <ul id="lista-selecionados" class="selecionados-lista"></ul>
+                </div>
+            
+                <div class="add-event-input">
+                    <input type="text" placeholder="Nome Evento" class="event-name" />
+                </div>
+                <div class="add-event-input">
+                    <input type="text" placeholder="Horário" class="event-time-from" />
+                </div>
+            </div>
+            <div class="add-event-footer">
+                <button class="add-event-btn" id="add-event-btn">Adicionar</button>
+            </div>
+            </div>
+        </div>
+        <button class="add-event">
+            <i class="fas fa-plus"></i>
+        </button>
+        </div>
+    </div>
+
+    <script>
+        // Função para adicionar aspirantes na lista de selecionados
+        function adicionarAspirante() {
+          const aspiranteSelect = document.getElementById("aspirantes");
+          const listaSelecionados = document.getElementById("lista-selecionados");
+  
+          // Verifica se há um aspirante selecionado
+          const selectedOptions = Array.from(aspiranteSelect.selectedOptions);
+          selectedOptions.forEach(option => {
+            const aspiranteNome = option.text;
+            const aspiranteId = option.value;
+  
+            // Verifica se o aspirante já está na lista
+            if (![...listaSelecionados.children].some(li => li.dataset.aspiranteId === aspiranteId)) {
+              const item = document.createElement("li");
+              item.textContent = aspiranteNome;
+              item.dataset.aspiranteId = aspiranteId; // Armazena o ID do aspirante no elemento
+              listaSelecionados.appendChild(item);
+            }
+          });
+        }
+  
+        // Enviar os dados do evento para o backend
+        document.getElementById("add-event-btn").addEventListener("click", function () {
+          const nome = document.querySelector(".event-name").value;
+          const hora = document.querySelector(".event-time-from").value;
+          const aspirantesSelecionados = Array.from(document.querySelectorAll(".selecionados-lista li"))
+            .map(item => item.dataset.aspiranteId);
+  
+          const evento = {
+            nome: nome,
+            data: selectedDate, // Usando a data selecionada pelo usuário
+            hora: hora,
+            aspirante_ids: aspirantesSelecionados
+          };
+  
+          // Enviar os dados via JSON para o backend
+          fetch("/eventos/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(evento),
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert("Evento adicionado com sucesso!");
+              window.location.reload(); // Recarregar a página para exibir o novo evento
+            } else {
+              alert("Falha ao adicionar evento.");
+            }
+          })
+          .catch(error => {
+            console.error("Erro ao enviar dados:", error);
+          });
+        });
+      </script>
+  
+      <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    </body>
+  </html>
+  
+  {% endblock %}

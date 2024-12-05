@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendar with Events</title>
+  </head>
+  <body>
+    <div class="painel-header container-fluid">
+      <h1>
+        <i class="fa-solid fa-book"></i> Atividades
+      </h1>
+      <p class="welcome-message">Visualize e adicione atividades do Alpha EdTech</p>
+
+        <fieldset class="border p-3">
+            <!-- Container para mensagens de sucesso ou erro -->
+            <div id="message-container" class="mt-3">
+                {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endif %}
+                {% if success %}
+                <div class="alert alert-success" role="alert">
+                    {{ success }}
+                </div>
+                {% endif %}
+            </div>
+    
+            <!-- Novo input de upload de arquivo -->
+           <div class="mt-3">
+              <label for="file_input" class="form-label">Carregar Arquivo XLSM ou XLSX</label>
+              <input type="file" class="form-control" id="file_input" name="file" accept=".xlsm,.xlsx">
+           </div>
+
+           <!-- Botão para carregar o arquivo XLSM -->
+           <button type="button" class="btn mt-2" style="background-color: rgb(0, 182, 130); color: white;" onclick="uploadFile()">
+            <i class="fas fa-upload"></i> Carregar Arquivo
+           </button>
+    
+          </fieldset>
+    </div>
+
+    <script>
+      function uploadFile() {
+          const fileInput = document.getElementById('file_input');
+          const file = fileInput.files[0];
+    
+          // Verifica se o arquivo foi selecionado e se é do tipo XLSX ou XLSM
+          if (file) {
+              const allowedExtensions = ['.xlsm', '.xlsx'];
+              const fileExtension = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+    
+              if (allowedExtensions.includes(fileExtension)) {  // Verifica se a extensão é permitida
+                  const formData = new FormData();
+                  formData.append('file', file);
+    
+                  fetch('/upload_atividades', {  // URL configurada para o upload
+                      method: 'POST',
+                      body: formData
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                      const messageContainer = document.getElementById('message-container');
+                      
+                      if (data.success) {
+                          let successMessage = `<div class="alert alert-success" role="alert">${data.message}</div>`;
+                          
+                          // Verificar se há erros e exibir uma lista
+                          if (data.errors && data.errors.length > 0) {
+                              const errorList = data.errors.map(error => `<li>${error}</li>`).join('');
+                              successMessage += `<div class="alert alert-warning" role="alert">
+                                  <strong>Aviso:</strong> Alguns erros ocorreram:<ul>${errorList}</ul>
+                              </div>`;
+                          }
+                          
+                          messageContainer.innerHTML = successMessage;
+                      } else {
+                          messageContainer.innerHTML = `<div class="alert alert-danger" role="alert">${data.message}</div>`;
+                      }
+                  })
+                  .catch(error => {
+                      console.error('Erro:', error);
+                      alert('Erro ao carregar o arquivo. Tente novamente.');
+                  });
+              } else {
+                  alert('Por favor, selecione um arquivo XLSX ou XLSM válido.');
+              }
+          } else {
+              alert('Por favor, selecione um arquivo XLSX ou XLSM.');
+          }
+      }
+    </script>
+  </body>
+</html>
+{% endblock %}

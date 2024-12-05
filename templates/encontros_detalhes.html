@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <h2>Detalhes do Encontro</h2>
+    {% if encontro %}
+        <div class="card">
+            <div class="card-body">
+                <p><strong>ID:</strong> {{ encontro.id }}</p>
+                <p><strong>Trilha:</strong> {{ encontro.trilha }}</p>
+                <p><strong>Data:</strong> {{ encontro.data }}</p>
+                <p><strong>Hora:</strong> {{ encontro.hora }}</p>
+                <p><strong>Módulo:</strong> {{ encontro.modulo }}</p>
+                <p><strong>Assunto:</strong> {{ encontro.assunto }}</p>
+                <p><strong>Duração:</strong> {{ encontro.duracao }} minutos</p>
+                <p><strong>Atividade:</strong> {{ 'Sim' if encontro.atividade else 'Não' }}</p>
+            </div>
+        </div>
+    {% else %}
+        <p>Nenhum detalhe do encontro disponível.</p>
+    {% endif %}
+
+    <h3>Lista de Presença</h3>
+    {% if lista_presenca %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Aspirante</th>
+                <th>Minutos Presentes</th>
+                <th>Duração da Aula</th>
+                <th>Porcentagem de Presença</th>
+                <th>Presença</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in lista_presenca %}
+            <tr>
+                <td>{{ item.Aspirante }}</td>
+                <td>{{ item['Minutos Presentes'] }}</td>
+                <td>{{ item['Duração da Aula'] }}</td>
+                <td>{{ item['Porcentagem de Presença'] }}</td>
+                <td>{{ 'Presente' if item.Presença else 'Faltou' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nenhum aspirante presente.</p>
+    {% endif %}
+</div>
+{% endblock %}
