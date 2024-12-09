@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html" %} 
 
 {% block title %}Detalhes do Aspirante{% endblock %}
 
@@ -38,16 +38,25 @@
             <!-- Ficha do Aspirante -->
             <div class="ficha-aspirante">
                 <!-- Foto do Aspirante -->
-                <label class="ficha-label foto-label">
-                    {% if aspirante.foto %}
-                    <img src="data:image/jpeg;base64,{{ aspirante.foto | b64encode }}" alt="Foto do Aspirante" class="ficha-foto">
-                    {% else %}
-                        <i class="fas fa-user-circle ficha-foto" style="font-size: 100px; color: #ccc;"></i>
-                    {% endif %}
-                </label>
-        
+                <div class="foto-info-container">
+                    <div class="foto-container">
+                        <div class="ficha-field foto-field">
+                            {% if aspirante.foto %}
+                                <img src="data:image/jpeg;base64,{{ aspirante.foto | b64encode }}" alt="Foto do Aspirante" class="ficha-foto">
+                            {% else %}
+                                <i class="fas fa-user-circle ficha-foto" style="font-size: 100px; color: #ccc;"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="info-container">
+                        <button id="btn-meus-dados" class="btn btn-secondary" style="background-color: rgb(205, 192, 15); color: white;">Meus Dados</button>
+                    </div>
+
+                </div>
+
                 <!-- Informações do Aspirante -->
-                <label class="ficha-label info-label">
+                <div class="ficha-field info-field">
                     <p><strong>{{ aspirante.nome | title }}</strong></p>
                     <p><strong>Sexo:</strong> {{ aspirante.sexo }}</p>
                     <p><strong>Idade:</strong> {{ aspirante.idade }}</p>
@@ -55,15 +64,74 @@
                     <p><strong>UF:</strong> {{ aspirante.uf }}</p>
                     <p><strong>Fone:</strong> {{ aspirante.fone }}</p>
                     <p><strong>Ativo:</strong> {{ 'Sim' if aspirante.ativo else 'Não' }}</p>
-                    <form action="{{ url_for('lista.alterar_foto', id=aspirante.id) }}" method="POST" enctype="multipart/form-data">
-                        <label for="foto">Escolha uma nova foto:</label>
-                        <input type="file" name="foto" id="foto" accept="image/*" required>
-                        <button type="submit" class="btn btn-primary">Alterar Foto</button>
-                    </form>
-                </label>
 
+                    <!-- Formulário para carregar foto -->
+                    <form action="{{ url_for('lista.alterar_foto', id=aspirante.id) }}" method="POST" enctype="multipart/form-data">
+                        <div class="custom-file">
+                            <input type="file" name="foto" id="foto" accept="image/*" required>
+                            <button type="submit" class="btn btn-primary" style="background-color: rgb(0, 182, 130); color: white;">
+                                <i class="fas fa-upload"></i> Alterar Foto
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="container-flutuante" class="container-flutuante" style="display: none;">
+                        <div class="header-container">
+                            <button id="btn-fechar" class="btn-fechar">×</button>
+                        </div>
+
+                        <form action="{{ url_for('lista.alterar_aspirante', id=aspirante.id) }}" method="POST">
+                            <div class="ficha-field">
+                                <input type="text" id="nome" name="nome" value="{{ aspirante.nome }}" required>
+                            </div>
+                            <div class="ficha-field">
+                                <input type="email" id="email" name="email" value="{{ aspirante.email }}">
+                            </div>
+                            <div class="ficha-field">
+                                <input type="text" id="idade" name="idade" value="{{ aspirante.idade }}">
+                            </div>
+                            <div class="ficha-field">
+                                <select id="sexo" name="sexo">
+                                    <option value="Masculino" {% if aspirante.sexo == 'Masculino' %}selected{% endif %}>Masculino</option>
+                                    <option value="Feminino" {% if aspirante.sexo == 'Feminino' %}selected{% endif %}>Feminino</option>
+                                </select>
+                            </div>
+                            <div class="ficha-field">
+                                <input type="text" id="uf" name="uf" value="{{ aspirante.uf }}">
+                            </div>
+                            <div class="ficha-field">
+                                <input type="text" id="fone" name="fone" value="{{ aspirante.fone }}">
+                            </div>
+                            <div class="ficha-field">
+                                <input type="checkbox" id="ativo" name="ativo" {% if aspirante.ativo %}checked{% endif %}>Ativo
+                            </div>
+                            <button type="submit"  class="btn btn-primary" style="background-color: rgb(0, 182, 130); color: white;">
+                                <i class="fas fa-save"></i> Salvar
+                            <button type="button" id="btn-cancelar" class="btn btn-danger">Cancelar</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Seleciona os elementos
+    const btnMeusDados = document.getElementById("btn-meus-dados");
+    const btnFechar = document.getElementById("btn-fechar");
+    const containerFlutuante = document.getElementById("container-flutuante");
+
+    // Função para exibir o container
+    btnMeusDados.addEventListener("click", function() {
+        containerFlutuante.style.display = "block"; // Exibe o container
+    });
+
+    // Função para fechar o container
+    btnFechar.addEventListener("click", function() {
+        containerFlutuante.style.display = "none"; // Esconde o container
+    });
+
+});
+</script>
 </body>
 {% endblock %}
