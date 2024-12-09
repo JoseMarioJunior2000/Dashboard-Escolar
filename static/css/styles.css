@@ -998,12 +998,12 @@ select::after {
   background-color: #f9f9f9;
 }
 
-.ficha-label {
+.ficha-field {
   display: block;
   flex: 1;
 }
 
-.foto-label {
+.foto-field {
   text-align: center;
   max-width: 250px;
 }
@@ -1015,7 +1015,7 @@ select::after {
   border: 3px solid #ccc;
 }
 
-.info-label {
+.info-ficha {
   flex: 2;
   font-size: 16px;
   line-height: 1.6;
@@ -1141,4 +1141,53 @@ select::after {
 #grafico-presenca {
   width: 100%;
   height: 400px; /* Altura fixa para o gráfico */
+}
+
+.container-flutuante {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px; /* Ajuste conforme o tamanho desejado */
+  padding: 20px;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000; /* Garante que o container fique sobre outros elementos */
+  display: block; /* O container estará visível por padrão */
+  opacity: 1; /* Inicialmente visível */
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Header do container com o botão de fechar */
+.header-container {
+  text-align: right;
+}
+
+/* Estilo do botão de fechar */
+.btn-fechar {
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+}
+
+.btn-fechar:hover {
+  color: red;
+}
+
+/* Estilo do botão de minimizar */
+.btn-minimizar {
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Opacidade e efeito quando o container for minimizado */
+.container-flutuante.minimizado {
+  transform: translate(-50%, 10%); /* Ajuste conforme desejado */
+  opacity: 0.5; /* Torna o container transparente quando minimizado */
 }

@@ -56,3 +56,33 @@ def alterar_foto(id):
         flash("Nenhuma foto selecionada.", "warning")
     
     return redirect(url_for('lista.visualizar_aspirante', id=id))
+
+@lista_blueprinte.route('/aspirante/alterar/<int:id>', methods=['POST'])
+def alterar_aspirante(id):
+    aspirante = aspirante_repo.get_by_id(id)
+    if not aspirante:
+        flash("Aspirante não encontrado.", "danger")
+        return redirect(url_for('lista.lista_aspirantes'))
+    
+    nome = request.form.get('nome').upper()
+    email = request.form.get('email')
+    idade = request.form.get('idade')
+    sexo = request.form.get('sexo')
+    uf = request.form.get('uf').upper()
+    fone = request.form.get('fone')
+    ativo = request.form.get('ativo') == 'on'
+
+    try:
+        aspirante_repo.update(id, 'nome', nome)
+        aspirante_repo.update(id, 'email', email)
+        aspirante_repo.update(id, 'idade', idade)
+        aspirante_repo.update(id, 'sexo', sexo)
+        aspirante_repo.update(id, 'uf', uf)
+        aspirante_repo.update(id, 'fone', fone)
+        aspirante_repo.update(id, 'ativo', ativo)
+
+        flash("Dados do aspirante atualizados com sucesso!", "success")
+    except Exception as e:
+        flash(f"Erro ao atualizar informações: {e}", "danger")
+    
+    return redirect(url_for('lista.visualizar_aspirante', id=id))
